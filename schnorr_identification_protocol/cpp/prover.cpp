@@ -10,12 +10,7 @@ BIGNUM* Prover::commitment() {
 
     BIGNUM* t = BN_new();
 
-    int commitmentExponentKInt = Utils::bnToInt(commitmentExponentK);
-    int primeInt = Utils::bnToInt(prime);
-    int gInt = Utils::bnToInt(generator);
-
     BN_mod_exp(t, generator, commitmentExponentK, prime, ctx); 
-    int tInt = Utils::bnToInt(t);
 
     return t;
 }
