@@ -10,7 +10,7 @@ BIGNUM* Verifier::generateChallenge() {
     return challenge;
 }
 
-BIGNUM* Verifier::verifyProof(const BIGNUM* witness, const BIGNUM* proof, const BIGNUM* commitment) {
+BIGNUM* Verifier::verifyProof(const BIGNUM* witness) {
     BIGNUM* lhs = BN_new();
     BN_mod_exp(lhs, generator, witness, prime, ctx);
 
@@ -29,4 +29,12 @@ BIGNUM* Verifier::verifyProof(const BIGNUM* witness, const BIGNUM* proof, const 
     BIGNUM* resultBN = BN_new();
     BN_set_word(resultBN, result == 0 ? 1 : 0);
     return resultBN;
+}
+
+void Verifier::storeProof(const BIGNUM* receivedProof) {
+    proof = BN_dup(receivedProof);
+}
+
+void Verifier::storeCommitment(const BIGNUM* receivedCommitment) {
+    commitment = BN_dup(receivedCommitment);
 }

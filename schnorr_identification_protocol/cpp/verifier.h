@@ -17,15 +17,21 @@ public:
     
     ~Verifier() {
         BN_CTX_free(ctx);
+        BN_free(challenge);
+        BN_free(proof);
+        BN_free(commitment);
     }
 
     BIGNUM* generateChallenge();
-    BIGNUM* verifyProof(const BIGNUM* witness, const BIGNUM* proof, const BIGNUM* commitment);
+    BIGNUM* verifyProof(const BIGNUM* witness);
+    void storeProof(const BIGNUM* proof);
+    void storeCommitment(const BIGNUM* commitment);
 
 private:
     BN_CTX* ctx;  
     BIGNUM* challenge;
-
+    BIGNUM* proof;
+    BIGNUM* commitment;
 };
 
 #endif 
