@@ -190,6 +190,7 @@ int main() {
                     BN_hex2bn(&challenge, static_cast<char*>(receivedMsg.data()));
                     proverReceiveChallengeAndSendWitness(proverSocket, prover, challenge);
                     step++;
+                    BN_free(challenge);
             }
 
         }
