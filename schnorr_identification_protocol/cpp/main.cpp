@@ -60,9 +60,7 @@ void verifierReceiveProofAndAskForCommitment(zmq::socket_t& socket, Verifier& ve
     std::string ask = "Send Commitment Across Please";
 
     zmq::message_t askMsg(ask.size());
-
     memcpy(askMsg.data(), ask.data(), ask.size());
-
     socket.send(askMsg, zmq::send_flags::none);
 
     std::cout << "Verifier storing the proof and asking for the commitment value: "  << std::endl;
@@ -79,10 +77,8 @@ void verifierReceiveCommitmentAndSendChallenge(zmq::socket_t& socket, Verifier& 
         verifier.storeCommitment(commitment);
 
 
-        // Process the request (generate challenge)
         BIGNUM* challenge = verifier.generateChallenge();
 
-        // Send the challenge to the Prover
         zmq::message_t response(sizeof(challenge));
         memcpy(response.data(), BN_bn2hex(challenge), sizeof(challenge));
         socket.send(response, zmq::send_flags::none);
@@ -98,7 +94,9 @@ void verifierReceiveWitnessAndVerifyIdentification(zmq::socket_t& socket, Verifi
         BN_hex2bn(&witness, static_cast<char*>(receivedWitness.data()));
 
         BIGNUM* result = verifier.verifyProof(witness);
+        
         std::cout << "Computing the proof ..." << std::endl;
+
         if (BN_cmp(result, BN_value_one()) == 0) {
             std::cout << "Proof is correct." << std::endl;
         } else {
@@ -126,14 +124,11 @@ int main() {
     Verifier verifier(generator, prime);
     Prover prover(generator, prime);
     
-    // Create a ZMQ context
     zmq::context_t context(1);
 
-    // Create a ZMQ socket for the Verifier
     zmq::socket_t verifierSocket(context, ZMQ_REP);
     verifierSocket.bind("tcp://*:5001");
 
-    // Create a ZMQ socket for the Prover
     zmq::socket_t proverSocket(context, ZMQ_REQ);
     proverSocket.connect("tcp://localhost:5001");
 
@@ -160,7 +155,7 @@ int main() {
         continue;
         }
 
-        // Handle messages from the Verifier
+        // Handle messages from the Proposer
         if (items[0].revents & ZMQ_POLLIN) {
             if (step == 0)
             {
@@ -180,8 +175,7 @@ int main() {
             }
         }
 
-
-        // Handle messages from the Prover
+        // Handle messages from the Verifier
         if (items[1].revents & ZMQ_POLLIN) {
             zmq::message_t receivedMsg;
             proverSocket.recv(receivedMsg, zmq::recv_flags::none);
