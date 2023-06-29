@@ -34,8 +34,8 @@ void proverSendCommitment(zmq::socket_t& socket, Prover& prover) {
     BN_free(commitment); 
 }
 
-void proverReceiveChallengeAndSendWitness(zmq::socket_t& socket, Prover& prover, BIGNUM* receivedChallenge) {
-    BIGNUM* witness = prover.generateWitness(receivedChallenge);
+void proverReceiveChallengeAndSendHiddenWitness(zmq::socket_t& socket, Prover& prover, BIGNUM* receivedChallenge) {
+    BIGNUM* witness = prover.generateHiddenWitness(receivedChallenge);
     std::string witnessHex = BN_bn2hex(witness);
 
     zmq::message_t witnessMsg(witnessHex.size());
@@ -44,7 +44,7 @@ void proverReceiveChallengeAndSendWitness(zmq::socket_t& socket, Prover& prover,
 
     socket.send(witnessMsg, zmq::send_flags::none);
 
-    std::cout << "Prover sending the Witness s = c*x + k across: " << witnessHex << std::endl;
+    std::cout << "Prover sending the hidden witness s = c*x + k across: " << witnessHex << std::endl;
 
     BN_free(witness); 
 }
@@ -188,7 +188,7 @@ int main() {
             else {
                     BIGNUM* challenge = BN_new();
                     BN_hex2bn(&challenge, static_cast<char*>(receivedMsg.data()));
-                    proverReceiveChallengeAndSendWitness(proverSocket, prover, challenge);
+                    proverReceiveChallengeAndSendHiddenWitness(proverSocket, prover, challenge);
                     step++;
                     BN_free(challenge);
             }

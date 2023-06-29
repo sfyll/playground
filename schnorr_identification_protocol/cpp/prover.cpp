@@ -15,7 +15,7 @@ BIGNUM* Prover::commitment() {
     return t;
 }
 
-BIGNUM* Prover::generateWitness(const BIGNUM* c) {
+BIGNUM* Prover::generateHiddenWitness(const BIGNUM* c) {
     BIGNUM* temp = BN_new();
     BN_mul(temp, c, secret_x, ctx);
 

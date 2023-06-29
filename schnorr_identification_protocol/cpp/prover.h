@@ -28,7 +28,7 @@ public:
 
 
     BIGNUM* commitment();
-    BIGNUM* generateWitness(const BIGNUM* c);
+    BIGNUM* generateHiddenWitness(const BIGNUM* c);
     BIGNUM* generateProof();
 
 private:
